@@ -6,6 +6,7 @@ import {Weather} from './weather';
     template: `<header><h1>Clima App</h1></header>
     <div class="content">
       <input [(ngModel)] = "city" placeholder="Busca alguna ciudad" (keyup)="addCity(city , $event)"> 
+      <p *ngIf="errorMessage" class="error-messsage">{{errorMessage}}</p>
       <h2>Este es el clima en la ciudad : {{city}}</h2>
       <ul *ngFor="#weather of weatherOfCities" class="weather-card"> 
         <li>
@@ -35,6 +36,10 @@ import {Weather} from './weather';
       border-bottom: 1px solid #03D3D3;
       padding-bottom: 10px;
       }
+      .error-messsage{
+      color: red;
+      font-size: 8px;
+      }
     ` ]
 
 })
@@ -43,6 +48,7 @@ export class AppComponent {
   public city:string ;
   public cities: Array<string>;
   public weatherOfCities: Array<Weather>;
+  public errorMessage : string;
 
   constructor(){
     this.city = "";
@@ -51,6 +57,7 @@ export class AppComponent {
 
   getWeather = function (city:string){
       var weather:Weather;
+      this.errorMessage = "";
       if(city.toLocaleLowerCase() == "viena"){
           weather = {
             "id" : 1,
@@ -65,7 +72,9 @@ export class AppComponent {
             "main" : "lloviendo",
             "description" : "Lluvias torrenciales"
           }
-        }
+        }else{
+          this.errorMessage = "Esta ciudad no existe.";
+      }
     return weather;
   }
 
