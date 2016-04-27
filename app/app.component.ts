@@ -1,5 +1,6 @@
 import {Component} from 'angular2/core';
 import {Weather} from './weather';
+import {WeatherService} from './weather.service';
 
 @Component({
     selector: 'my-app',
@@ -40,7 +41,8 @@ import {Weather} from './weather';
       color: red;
       font-size: 8px;
       }
-    ` ]
+    ` ] ,
+  providers : [WeatherService]
 
 })
 export class AppComponent {
@@ -50,39 +52,17 @@ export class AppComponent {
   public weatherOfCities: Array<Weather>;
   public errorMessage : string;
 
-  constructor(){
+  constructor( private weatherService:WeatherService ){
     this.city = "";
     this.weatherOfCities = [];
   }
 
-  getWeather = function (city:string){
-      var weather:Weather;
-      this.errorMessage = "";
-      if(city.toLocaleLowerCase() == "viena"){
-          weather = {
-            "id" : 1,
-            "city" : "viena",
-            "main" : "nublado",
-            "description" : "Bastante nublado"
-          }
-        }else if (city.toLocaleLowerCase() == "london"){
-          weather = {
-            "id" : 2,
-            "city" : "london",
-            "main" : "lloviendo",
-            "description" : "Lluvias torrenciales"
-          }
-        }else{
-          this.errorMessage = "Esta ciudad no existe.";
-      }
-    return weather;
-  }
 
-  addCity = function (city:string , $event){
+  addCity (city:string , $event){
+    var weather = this.weatherService.getWeather(city);
         if($event.keyCode == 13){
-            var weather = this.getWeather(city);
             if(weather){
-              this.weatherOfCities.push(this.getWeather(city));
+              this.weatherOfCities.push(weather);
             }
             this.city = "";
         }
