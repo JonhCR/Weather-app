@@ -59,12 +59,25 @@ export class AppComponent {
 
 
   addCity (city:string , $event){
-    var weather = this.weatherService.getWeather(city);
+
         if($event.keyCode == 13){
-            if(weather){
-              this.weatherOfCities.push(weather);
-            }
-            this.city = "";
+          this.weatherService.getWeather(city)
+            .subscribe(weather => {
+              if(weather){
+                this.weatherOfCities.push(weather);
+                this.errorMessage = undefined;
+              }else{
+                var cityWithoutWeather = city;
+                this.errorMessage = "No hay datos de clima para " + cityWithoutWeather;
+              }
+              this.city ="";
+
+            } , error => {
+              this.city = "";
+              this.errorMessage = error;
+            });
+
+
         }
   }
 }

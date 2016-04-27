@@ -1,28 +1,36 @@
 import {Injectable} from 'angular2/core';
+import {Http} from 'angular2/http';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 import {Weather} from './weather';
 
 
 @Injectable()
 export class WeatherService {
 
-  getWeather = function (city:string){
-    var weather:Weather;
-    if(city.toLocaleLowerCase() == "viena"){
-      weather = {
-        "id" : 1,
-        "city" : "viena",
-        "main" : "nublado",
-        "description" : "Bastante nublado"
-      }
-    }else if (city.toLocaleLowerCase() == "london"){
-      weather = {
-        "id" : 2,
-        "city" : "london",
-        "main" : "lloviendo",
-        "description" : "Lluvias torrenciales"
-      }
-    }
-    return weather;
+  private weatherApiUrl:string = "http://api.openweathermap.org/data/2.5/weather?appid=31f2d00347a206865ef7abf5dc903d78";
+
+  constructor(private http:Http){}
+
+  getWeatherUrl(city:string){
+    return this.weatherApiUrl + "&q=" + city;
+  }
+
+  getWeather(city:string){
+    return new Observable(observable => {
+      this.http.get(this.getWeatherUrl(city))
+        .map(res => res.json())
+        .subscribe(res => {
+          if (res.cod == "404"){
+            observable.error(res.message);
+          }else{
+            var weather:Weather = res.weather[0];
+            weather.city = city;
+            observable.next(weather);
+          }
+        });
+
+    });
   }
 
 
